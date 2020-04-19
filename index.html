@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Parcel Sandbox</title>
+        <meta charset="UTF-8" />
+        <script>
+            function onRotation(rotation) {
+                document.getElementById('rotation').value = `${rotation} °`
+                window.setRotation((Number(rotation) * Math.PI) / 180)
+            }
+            function onRange(fps) {
+                document.getElementById('fps').value = `${fps} fps`
+                soldier.frames.forEach((frame) => {
+                    frame.frameDisplayDuration = 1000 / Number(fps)
+                })
+            }
+            function playpause() {
+                soldier.playing ? soldier.pause() : soldier.play()
+            }
+        </script>
+    </head>
+
+    <body>
+        <div id="app"></div>
+        <div id="buttons">
+            <button onclick="goto('iddle')">iddle</button>
+            <button onclick="goto('run')">run</button>
+
+            <input id="rotation" value="0 °" style="width: 40px;" readonly />
+            <input
+                type="range"
+                name="points"
+                value="0"
+                min="0"
+                max="360"
+                oninput="onRotation(this.value)"
+            />
+
+            <button onclick="playpause()">play / pause</button>
+            <input id="fps" value="30 fps" style="width: 40px;" readonly />
+            <input
+                type="range"
+                name="points"
+                value="30"
+                min="1"
+                max="100"
+                oninput="onRange(this.value)"
+            />
+        </div>
+        <script src="src/index.js"></script>
+    </body>
+</html>
