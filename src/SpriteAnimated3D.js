@@ -64,7 +64,6 @@ export default function SpriteAnimated3D() {
     }
 
     function setRotation(rot) {
-        console.log('LOOOL')
         rotation = rot
         updateRotation()
     }
@@ -97,7 +96,7 @@ export default function SpriteAnimated3D() {
         const { selected } = getIndexLoop(
             loops[current_loop],
             current_farme,
-            rotation
+            rotation + rotation_camera
         )
         current_loop = name
         animation.goto(loops[name][selected].start + frame)
