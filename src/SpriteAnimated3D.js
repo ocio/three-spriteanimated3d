@@ -73,10 +73,10 @@ export default function SpriteAnimated3D() {
         let selected = 0
         let current = 0
         const rotation_converted = getRotationConverted(rotation)
-        console.log({
-            rotation: rotation * (180 / Math.PI),
-            rotation_converted: rotation_converted * (180 / Math.PI),
-        })
+        // console.log({
+        //     rotation: rotation * (180 / Math.PI),
+        //     rotation_converted: rotation_converted * (180 / Math.PI),
+        // })
         loops.forEach(({ start, end, orientation }, index) => {
             const difference = Math.abs(orientation - rotation_converted)
             if (current_farme >= start && current_farme <= end) {
