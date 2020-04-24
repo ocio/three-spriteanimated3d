@@ -3,8 +3,8 @@ import SpriteAnimated from './SpriteAnimated'
 export default function SpriteAnimated3D() {
     const animation = SpriteAnimated()
     const loops = {}
-    let rotation_camera = 0
     let rotation = 0
+    let rotation_camera = 0
     let current_loop
 
     function createLoop(name, orientations) {
@@ -32,12 +32,57 @@ export default function SpriteAnimated3D() {
         return animation.update(delta)
     }
 
+    function setRotation(rot) {
+        rotation = rot
+        updateRotation()
+    }
+
+    function setRotationCamera(rot) {
+        // const cicles = Math.floor(rot / (Math.PI * 2))
+        // rotation_camera = rot - cicles * (Math.PI * 2)
+        rotation_camera = rot
+        updateRotation()
+    }
+
+    function getFullRotation() {
+        const rot = rotation_camera + rotation
+        return -rot //< 0 ? Math.PI * 2 - rot : rot
+    }
+
+    function updateRotation() {
+        const rot = getFullRotation()
+        const current_farme = animation.getFrame()
+        const loops_name = loops[current_loop]
+        const { current, selected } = getIndexLoop(
+            loops_name,
+            current_farme,
+            rot
+        )
+
+        if (current !== selected) {
+            const relative_frame = current_farme - loops_name[current].start
+            animation.goto(loops_name[selected].start + relative_frame)
+        }
+    }
+
+    function goto(name, frame = 0) {
+        const current_farme = animation.getFrame()
+        const { selected } = getIndexLoop(
+            loops[current_loop],
+            current_farme,
+            getFullRotation()
+        )
+        current_loop = name
+        animation.goto(loops[name][selected].start + frame)
+    }
+
     function getIndexLoop(loops, current_farme, rotation) {
         let min_orientation = Infinity
         let min_index
         let min_difference = Infinity
         let selected = 0
         let current = 0
+        console.log({ getIndexLoop: rotation * (180 / Math.PI) })
         loops.forEach(({ start, end, orientation }, index) => {
             const difference = Math.abs(orientation - rotation)
             if (current_farme >= start && current_farme <= end) {
@@ -61,45 +106,6 @@ export default function SpriteAnimated3D() {
         }
 
         return { current, selected }
-    }
-
-    function setRotation(rot) {
-        rotation = rot
-        updateRotation()
-    }
-
-    function setRotationCamera(rot) {
-        rotation_camera = rot
-        updateRotation()
-    }
-
-    function updateRotation() {
-        const rot = rotation + rotation_camera
-        const cicles = Math.floor(rot / (Math.PI * 2))
-        const rotation_reduced = rot - cicles * (Math.PI * 2)
-        const current_farme = animation.getFrame()
-        const loops_name = loops[current_loop]
-        const { current, selected } = getIndexLoop(
-            loops_name,
-            current_farme,
-            rotation_reduced
-        )
-
-        if (current !== selected) {
-            const relative_frame = current_farme - loops_name[current].start
-            animation.goto(loops_name[selected].start + relative_frame)
-        }
-    }
-
-    function goto(name, frame = 0) {
-        const current_farme = animation.getFrame()
-        const { selected } = getIndexLoop(
-            loops[current_loop],
-            current_farme,
-            rotation + rotation_camera
-        )
-        current_loop = name
-        animation.goto(loops[name][selected].start + frame)
     }
 
     const animation3d = {
