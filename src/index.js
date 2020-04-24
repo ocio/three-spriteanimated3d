@@ -24,10 +24,15 @@ function cartesianToSpherical({ x, y, z }) {
     const sphere = new THREE.Spherical()
     sphere.setFromCartesianCoords(x, y, z)
     return {
-        vertical: sphere.phi,
-        horizontal: sphere.theta,
+        vertical: convertNegativeRadianIntoDouble(sphere.phi),
+        horizontal: convertNegativeRadianIntoDouble(sphere.theta),
         radius: sphere.radius,
     }
+}
+
+function convertNegativeRadianIntoDouble(rad, max = Math.PI) {
+    if (rad < 0) return max * 2 + rad
+    return rad
 }
 
 function init() {
@@ -39,8 +44,9 @@ function init() {
     const attack_loops = []
     const run_loops = []
     for (let i = 0; i < 8; ++i) {
-        const orientation = 45 * i > 180 ? (360 - 45 * i) * -1 : 45 * i
+        const orientation = 45 * i //> 180 ? (360 - 45 * i) * -1 : 45 * i
         console.log({ orientation })
+
         iddle_loops.push({
             start: 46 * i,
             end: 46 * i,
@@ -120,23 +126,35 @@ scene.add(axis)
 
 document.body.appendChild(renderer.domElement)
 
-const { animation, update, setRotation, setRotationCamera, goto } = init()
+const { animation, update, setRotation, goto } = init()
 const scale = 5
 window.soldier = animation
 window.goto = goto
-window.setRotation = setRotation
+window.setRotationSoldier = (rotation) => {
+    soldierRotation = rotation
+    updateCamera()
+}
 animation.sprites.position.y = 0.5
 animation.sprites.scale.set(scale, scale, scale)
 scene.add(animation.sprites)
 
+let soldierRotation = 0
+let cameraRotation = 0
 controls.addEventListener('change', (e) => {
-    const { horizontal, vertical } = cartesianToSpherical(camera.position)
-    console.log('change', {
-        horizontal: horizontal * RAD2DEG,
-        vertical: vertical * RAD2DEG,
-    })
-    setRotationCamera(horizontal)
+    const { horizontal } = cartesianToSpherical(camera.position)
+    cameraRotation = horizontal
+    updateCamera()
 })
+
+function updateCamera() {
+    const rotation = soldierRotation + cameraRotation
+    // console.log('updateCamera', {
+    //     soldierRotation: soldierRotation * RAD2DEG,
+    //     cameraRotation: cameraRotation * RAD2DEG,
+    //     rotation: rotation * RAD2DEG,
+    // })
+    setRotation(rotation)
+}
 
 // animate
 const clock = new THREE.Clock()
