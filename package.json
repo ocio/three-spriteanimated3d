@@ -8,7 +8,7 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
-    "@ocio/three-camera-utils": "^1.6.0",
+    "@ocio/three-camera-utils": "^2.0.0",
     "@ocio/three-spriteanimated": "1.0.0",
     "three": "0.105.2"
   },

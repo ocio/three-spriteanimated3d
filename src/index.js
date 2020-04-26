@@ -3,6 +3,10 @@ import './styles.css'
 import * as THREE from 'three'
 import SpriteAnimated3D from './SpriteAnimated3D'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import {
+    sphericalToCartesian,
+    cartesianToSpherical,
+} from '@ocio/three-camera-utils'
 
 const vertical = 35
 const horizontal = 0
@@ -12,26 +16,9 @@ const radius = 200
 const DEG2RAD = Math.PI / 180
 const RAD2DEG = 180 / Math.PI
 
-function sphericalToCartesian({ horizontal, vertical, radius }) {
-    const theta = horizontal
-    const phi = vertical
-    const vector = new THREE.Vector3()
-    vector.setFromSphericalCoords(radius, phi, theta)
-    return vector
-}
-
-function cartesianToSpherical({ x, y, z }) {
-    const sphere = new THREE.Spherical()
-    sphere.setFromCartesianCoords(x, y, z)
-    return {
-        vertical: convertNegativeRadianIntoDouble(sphere.phi),
-        horizontal: convertNegativeRadianIntoDouble(sphere.theta),
-        radius: sphere.radius,
-    }
-}
-
 function convertNegativeRadianIntoDouble(rad, max = Math.PI) {
-    if (rad < 0) return max * 2 + rad
+    // if (rad < 0) return max * 2 + rad
+    // console.log(rad)
     return rad
 }
 
@@ -142,7 +129,7 @@ let soldierRotation = 0
 let cameraRotation = 0
 controls.addEventListener('change', (e) => {
     const { horizontal } = cartesianToSpherical(camera.position)
-    cameraRotation = horizontal
+    cameraRotation = convertNegativeRadianIntoDouble(horizontal)
     updateCamera()
 })
 
