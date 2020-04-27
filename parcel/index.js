@@ -6,11 +6,12 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import {
     sphericalToCartesian,
     cartesianToSpherical,
+    radToDeg,
 } from '@ocio/three-camera-utils'
 
 const vertical = 35
-const horizontal = 0
-const radius = 200
+const horizontal = 45
+const distance = 200
 
 // INTERESTING
 const DEG2RAD = Math.PI / 180
@@ -32,7 +33,6 @@ function init() {
     const run_loops = []
     for (let i = 0; i < 8; ++i) {
         const orientation = 45 * i //> 180 ? (360 - 45 * i) * -1 : 45 * i
-        console.log({ orientation })
 
         iddle_loops.push({
             start: 46 * i,
@@ -54,6 +54,10 @@ function init() {
     animation.createLoop('iddle', iddle_loops)
     animation.createLoop('attack', attack_loops)
     animation.createLoop('run', run_loops)
+
+    console.log('iddle', iddle_loops)
+    console.log('attack', attack_loops)
+    console.log('run', run_loops)
 
     return animation
 }
@@ -87,7 +91,7 @@ function add(
 const cameraPosition = sphericalToCartesian({
     vertical: vertical * DEG2RAD,
     horizontal: horizontal * DEG2RAD,
-    radius,
+    distance,
 })
 
 const scene = new THREE.Scene()
@@ -129,6 +133,7 @@ let soldierRotation = 0
 let cameraRotation = 0
 controls.addEventListener('change', (e) => {
     const { horizontal } = cartesianToSpherical(camera.position)
+    // console.log(radToDeg(horizontal))
     cameraRotation = convertNegativeRadianIntoDouble(horizontal)
     updateCamera()
 })
