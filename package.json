@@ -1,20 +1,20 @@
 {
-  "name": "spriteanimated3d",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.html",
-  "scripts": {
-    "start": "parcel index.html --open",
-    "build": "parcel build index.html"
-  },
-  "dependencies": {
-    "@ocio/three-camera-utils": "^2.0.0",
-    "@ocio/three-spriteanimated": "1.0.0",
-    "three": "0.105.2"
-  },
-  "devDependencies": {
-    "@babel/core": "7.2.0",
-    "parcel-bundler": "^1.6.1"
-  },
-  "keywords": []
+    "name": "spriteanimated3d",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.html",
+    "scripts": {
+        "dev": "parcel parcel/index.html --open",
+        "build": "parcel build parcel/index.html"
+    },
+    "dependencies": {
+        "@ocio/three-spriteanimated": "^1.1.0"
+    },
+    "devDependencies": {
+        "@babel/core": "7.2.0",
+        "@ocio/three-camera-utils": "^2.0.0",
+        "parcel-bundler": "^1.6.1",
+        "three": "0.105.2"
+    },
+    "keywords": []
 }
