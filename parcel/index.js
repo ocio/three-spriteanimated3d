@@ -22,13 +22,20 @@ function convertNegativeRadianIntoDouble(rad, max = Math.PI) {
 }
 
 const url = 'http://localhost:1234/axeman-blue.png'
+let sprite
 
 function init() {
     const animation = SpriteAnimated3D()
-    const loader = new THREE.TextureLoader()
-    const material = new THREE.SpriteMaterial({ map: loader.load(url) })
-    const sprite = new THREE.Sprite(material)
-    material.map.minFilter = THREE.NearestFilter
+    const texture = new THREE.TextureLoader().load(url)
+    texture.minFilter = THREE.NearestFilter
+    // const material = new THREE.SpriteMaterial({ map:texture  })
+    sprite = new THREE.Sprite(material)
+    const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+    })
+    sprite = new THREE.Mesh(new THREE.PlaneBufferGeometry(), material)
+
     animation.animation.addFrames({
         object: sprite,
         framesHorizontal: 46,
@@ -120,7 +127,7 @@ controls.addEventListener('change', (e) => {
     const { horizontal } = cartesianToSpherical(camera.position)
     // console.log(radToDeg(horizontal))
     cameraRotation = convertNegativeRadianIntoDouble(horizontal)
-    // sprite.quaternion.copy(camera.quaternion)
+    sprite.quaternion.copy(camera.quaternion)
     updateCamera()
 })
 
