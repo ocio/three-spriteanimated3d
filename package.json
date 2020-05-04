@@ -1,14 +1,14 @@
 {
     "name": "spriteanimated3d",
     "version": "1.0.0",
+    "main": "src/index",
     "description": "",
-    "main": "index.html",
     "scripts": {
         "dev": "parcel parcel/index.html --open",
         "build": "parcel build parcel/index.html"
     },
     "dependencies": {
-        "@ocio/three-spriteanimated": "^1.1.0"
+        "@ocio/three-spriteanimated": "^2.0.0"
     },
     "devDependencies": {
         "@babel/core": "7.2.0",

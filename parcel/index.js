@@ -18,15 +18,22 @@ const DEG2RAD = Math.PI / 180
 const RAD2DEG = 180 / Math.PI
 
 function convertNegativeRadianIntoDouble(rad, max = Math.PI) {
-    // if (rad < 0) return max * 2 + rad
-    // console.log(rad)
-    return rad
+    return rad < 0 ? max * 2 + rad : rad
 }
+
+const url = 'http://localhost:1234/axeman-blue.png'
 
 function init() {
     const animation = SpriteAnimated3D()
-    const { addFrames } = animation.animation
-    add(addFrames, 'http://localhost:1234/axeman-blue.png', 46, 8)
+    const loader = new THREE.TextureLoader()
+    const material = new THREE.SpriteMaterial({ map: loader.load(url) })
+    const sprite = new THREE.Sprite(material)
+    material.map.minFilter = THREE.NearestFilter
+    animation.animation.addFrames({
+        object: sprite,
+        framesHorizontal: 46,
+        framesVertical: 8,
+    })
 
     const iddle_loops = []
     const attack_loops = []
@@ -55,33 +62,11 @@ function init() {
     animation.createLoop('attack', attack_loops)
     animation.createLoop('run', run_loops)
 
-    console.log('iddle', iddle_loops)
-    console.log('attack', attack_loops)
-    console.log('run', run_loops)
+    // console.log('iddle', iddle_loops)
+    // console.log('attack', attack_loops)
+    // console.log('run', run_loops)
 
     return animation
-}
-
-function add(
-    addFrames,
-    url,
-    framesHorizontal,
-    framesVertical,
-    flipHorizontal = false,
-    flipVertical = false,
-    fps = 30
-) {
-    const loader = new THREE.TextureLoader()
-    const material = new THREE.SpriteMaterial({ map: loader.load(url) })
-    material.map.minFilter = THREE.NearestFilter
-    addFrames({
-        material,
-        framesHorizontal,
-        framesVertical,
-        flipHorizontal,
-        flipVertical,
-        frameDisplayDuration: 1000 / fps, // 30 frames per second,
-    })
 }
 
 // NOT INTERESTING
@@ -125,9 +110,9 @@ window.setRotationSoldier = (rotation) => {
     soldierRotation = rotation
     updateCamera()
 }
-animation.sprites.position.y = 0.5
-animation.sprites.scale.set(scale, scale, scale)
-scene.add(animation.sprites)
+animation.objects.position.y = 0.5
+animation.objects.scale.set(scale, scale, scale)
+scene.add(animation.objects)
 
 let soldierRotation = 0
 let cameraRotation = 0
@@ -135,16 +120,12 @@ controls.addEventListener('change', (e) => {
     const { horizontal } = cartesianToSpherical(camera.position)
     // console.log(radToDeg(horizontal))
     cameraRotation = convertNegativeRadianIntoDouble(horizontal)
+    // sprite.quaternion.copy(camera.quaternion)
     updateCamera()
 })
 
 function updateCamera() {
     const rotation = soldierRotation + cameraRotation
-    // console.log('updateCamera', {
-    //     soldierRotation: soldierRotation * RAD2DEG,
-    //     cameraRotation: cameraRotation * RAD2DEG,
-    //     rotation: rotation * RAD2DEG,
-    // })
     setRotation(rotation)
 }
 
@@ -161,18 +142,6 @@ function animate(time) {
 
     const delta = clock.getDelta()
     update(delta)
-
-    // console.log(
-    //     'horizontal',
-    //     Math.round(cartesianToSpherical(camera.position, 1)[0])
-    //     // Math.round(controls.getAzimuthalAngle() * RAD2DEG)
-    // )
-
-    // console.log(
-    //     'vertical',
-    //     Math.round(cartesianToSpherical(camera.position, 1)[1])
-    //     // Math.round(controls.getPolarAngle() * RAD2DEG)
-    // )
 }
 
 animate()
