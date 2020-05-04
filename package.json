@@ -1,5 +1,5 @@
 {
-    "name": "spriteanimated3d",
+    "name": "@ocio/three-spriteanimated3d",
     "version": "1.0.0",
     "main": "src/index",
     "description": "",
