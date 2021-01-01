@@ -1,0 +1,37 @@
+{
+    "url": "http://localhost:1234/knight-blue.png",
+    "framesHorizontal": 17,
+    "framesVertical": 17,
+    "loops": {
+        "iddle": [
+            { "start": 0, "end": 0, "orientation": 0 },
+            { "start": 26, "end": 26, "orientation": 45 },
+            { "start": 50, "end": 50, "orientation": 90 },
+            { "start": 75, "end": 75, "orientation": 135 },
+            { "start": 100, "end": 100, "orientation": 180 },
+            { "start": 125, "end": 125, "orientation": 225 },
+            { "start": 150, "end": 150, "orientation": 270 },
+            { "start": 175, "end": 175, "orientation": 315 }
+        ],
+        "attack": [
+            { "start": 0, "end": 25, "orientation": 0 },
+            { "start": 26, "end": 49, "orientation": 45 },
+            { "start": 50, "end": 74, "orientation": 90 },
+            { "start": 75, "end": 99, "orientation": 135 },
+            { "start": 100, "end": 125, "orientation": 180 },
+            { "start": 126, "end": 149, "orientation": 225 },
+            { "start": 150, "end": 174, "orientation": 270 },
+            { "start": 175, "end": 199, "orientation": 315 }
+        ],
+        "run": [
+            { "start": 200, "end": 210, "orientation": 0 },
+            { "start": 211, "end": 221, "orientation": 45 },
+            { "start": 222, "end": 232, "orientation": 90 },
+            { "start": 233, "end": 243, "orientation": 135 },
+            { "start": 244, "end": 254, "orientation": 180 },
+            { "start": 255, "end": 265, "orientation": 225 },
+            { "start": 266, "end": 276, "orientation": 270 },
+            { "start": 277, "end": 287, "orientation": 315 }
+        ]
+    }
+}

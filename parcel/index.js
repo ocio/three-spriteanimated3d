@@ -8,6 +8,8 @@ import {
     cartesianToSpherical,
     radToDeg,
 } from '@ocio/three-camera-utils'
+import AXEMAN from './examples/axeman.json'
+import KNIGHT from './examples/knight.json'
 
 const vertical = 35
 const horizontal = 45
@@ -21,13 +23,16 @@ function convertNegativeRadianIntoDouble(rad, max = Math.PI) {
     return rad < 0 ? max * 2 + rad : rad
 }
 
-const url = 'http://localhost:1234/axeman-blue.png'
 let sprite
+
+const { url, loops, framesHorizontal, framesVertical } = KNIGHT
 
 function init() {
     const animation = SpriteAnimated3D()
     const texture = new THREE.TextureLoader().load(url)
     texture.minFilter = THREE.NearestFilter
+    texture.minFilter = THREE.NearestMipmapLinearFilter
+
     // const material = new THREE.SpriteMaterial({ map:texture  })
     sprite = new THREE.Sprite(material)
     const material = new THREE.MeshBasicMaterial({
@@ -38,40 +43,18 @@ function init() {
 
     animation.animation.addFrames({
         object: sprite,
-        framesHorizontal: 46,
-        framesVertical: 8,
+        framesHorizontal,
+        framesVertical,
     })
 
-    const iddle_loops = []
-    const attack_loops = []
-    const run_loops = []
-    for (let i = 0; i < 8; ++i) {
-        const orientation = 45 * i //> 180 ? (360 - 45 * i) * -1 : 45 * i
-
-        iddle_loops.push({
-            start: 46 * i,
-            end: 46 * i,
-            orientation: orientation * DEG2RAD,
+    Object.keys(loops).forEach((loop_name) => {
+        const orientations = loops[loop_name]
+        orientations.forEach((ori) => {
+            ori.orientation *= DEG2RAD
         })
-        attack_loops.push({
-            start: 46 * i,
-            end: 46 * i + 29,
-            orientation: orientation * DEG2RAD,
-        })
-        run_loops.push({
-            start: 46 * i + 29 + 1,
-            end: 46 * i + 29 + 15 + 1,
-            orientation: orientation * DEG2RAD,
-        })
-    }
-
-    animation.createLoop('iddle', iddle_loops)
-    animation.createLoop('attack', attack_loops)
-    animation.createLoop('run', run_loops)
-
-    // console.log('iddle', iddle_loops)
-    // console.log('attack', attack_loops)
-    // console.log('run', run_loops)
+        console.log(loop_name, orientations)
+        animation.createLoop(loop_name, orientations)
+    })
 
     return animation
 }
@@ -89,6 +72,10 @@ const cameraPosition = sphericalToCartesian({
 const scene = new THREE.Scene()
 const scene_sprites = new THREE.Scene()
 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
+renderer.autoClear = false
+renderer.setSize(window.innerWidth, window.innerHeight)
+renderer.setPixelRatio(window.devicePixelRatio)
+
 const camera = new THREE.PerspectiveCamera(
     5, // fov
     window.innerWidth / window.innerHeight, // aspect
@@ -143,6 +130,13 @@ function animate(time) {
         renderer.render(scene, camera)
         // renderer.clearDepth()
     })
+
+    const canvas_width = window.innerWidth
+    const canvas_height = window.innerHeight
+    renderer.setSize(canvas_width, canvas_height)
+    // renderer_css.setSize(canvas_width, canvas_height)
+    camera.aspect = canvas_width / canvas_height
+    camera.updateProjectionMatrix()
 
     controls.update()
     requestAnimationFrame(animate)
