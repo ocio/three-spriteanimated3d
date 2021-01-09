@@ -1,5 +1,4 @@
 .cache
 dist/*
-!dist/axeman-blue.png
 node_modules
 package-lock.json
