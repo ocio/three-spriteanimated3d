@@ -26,13 +26,19 @@ export default function SpriteAnimated3D(onecircle = Math.PI * 2) {
         }
     }
 
+    function reduceExcessRotation(rotation) {
+        const onecircle = Math.PI * 2
+        const cicles = rotation / onecircle
+        return cicles > 1 ? rotation - Math.floor(cicles) * onecircle : rotation
+    }
+
     function update(delta) {
         // console.log(animation)
         return animation.update(delta)
     }
 
     function setRotation(rot) {
-        rotation = rot
+        rotation = reduceExcessRotation(rot)
         updateRotation()
     }
 
@@ -61,24 +67,14 @@ export default function SpriteAnimated3D(onecircle = Math.PI * 2) {
         animation.goto(loops[name][selected].start + frame)
     }
 
-    function getRotationConverted(rotation) {
-        const cicles = Math.floor(rotation / onecircle)
-        return onecircle - (rotation - cicles * onecircle)
-    }
-
     function getIndexLoop(loops, current_farme, rotation) {
         let min_orientation = Infinity
         let min_index
         let min_difference = Infinity
         let selected = 0
         let current = 0
-        const rotation_converted = getRotationConverted(rotation)
-        // console.log({
-        //     rotation: rotation * (180 / Math.PI),
-        //     rotation_converted: rotation_converted * (180 / Math.PI),
-        // })
         loops.forEach(({ start, end, orientation }, index) => {
-            const difference = Math.abs(orientation - rotation_converted)
+            const difference = Math.abs(orientation - rotation)
             if (current_farme >= start && current_farme <= end) {
                 current = index
             }
@@ -94,7 +90,7 @@ export default function SpriteAnimated3D(onecircle = Math.PI * 2) {
 
         // Initial orientation
         const orientation = onecircle + min_orientation
-        const difference = Math.abs(orientation - rotation_converted)
+        const difference = Math.abs(orientation - rotation)
         if (difference < min_difference) {
             selected = min_index
         }

@@ -6,21 +6,31 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import {
     sphericalToCartesian,
     cartesianToSpherical,
+    cartesianToSphericalByControls,
     radToDeg,
+    degToRad,
 } from '@ocio/three-camera-utils'
 import AXEMAN from './examples/axeman.json'
 import KNIGHT from './examples/knight.json'
 
-const vertical = 35
+const vertical = 0
 const horizontal = 45
 const distance = 200
 
 // INTERESTING
-const DEG2RAD = Math.PI / 180
-const RAD2DEG = 180 / Math.PI
 
 function convertNegativeRadianIntoDouble(rad, max = Math.PI) {
     return rad < 0 ? max * 2 + rad : rad
+}
+
+function reduceExcessRotation(rotation) {
+    const onecircle = Math.PI * 2
+    const cicles = rotation / onecircle
+    if (cicles > 1) {
+        return rotation - Math.floor(cicles) * onecircle
+    } else {
+        return rotation
+    }
 }
 
 let sprite
@@ -50,7 +60,7 @@ function init() {
     Object.keys(loops).forEach((loop_name) => {
         const orientations = loops[loop_name]
         orientations.forEach((ori) => {
-            ori.orientation *= DEG2RAD
+            ori.orientation = degToRad(ori.orientation)
         })
         console.log(loop_name, orientations)
         animation.createLoop(loop_name, orientations)
@@ -64,8 +74,8 @@ function init() {
 // NOT INTERESTING
 
 const cameraPosition = sphericalToCartesian({
-    vertical: vertical * DEG2RAD,
-    horizontal: horizontal * DEG2RAD,
+    vertical: degToRad(vertical),
+    horizontal: degToRad(horizontal),
     distance,
 })
 
@@ -111,15 +121,21 @@ scene.add(animation.objects)
 let soldierRotation = 0
 let cameraRotation = 0
 controls.addEventListener('change', (e) => {
-    const { horizontal } = cartesianToSpherical(camera.position)
+    const { horizontal } = cartesianToSphericalByControls(controls)
     // console.log(radToDeg(horizontal))
-    cameraRotation = convertNegativeRadianIntoDouble(horizontal)
+    cameraRotation = degToRad(360) - convertNegativeRadianIntoDouble(horizontal)
     sprite.quaternion.copy(camera.quaternion)
     updateCamera()
 })
 
 function updateCamera() {
-    const rotation = soldierRotation + cameraRotation
+    const rotation = cameraRotation + soldierRotation
+    console.log({
+        cameraRotation: Math.round(radToDeg(cameraRotation)),
+        soldierRotation: Math.round(radToDeg(soldierRotation)),
+        rotation: Math.round(radToDeg(rotation)),
+        converted: Math.round(radToDeg(reduceExcessRotation(rotation))),
+    })
     setRotation(rotation)
 }
 
