@@ -23,7 +23,7 @@ export default function SpriteAnimated3D({ onEnterFrame, onFinishLoop }) {
                 ({ start, end }) => frame <= end && frame >= start
             )
             if (loop_item !== undefined) {
-                onEnterFrame(frame - loop_item.start)
+                onEnterFrame(frame - loop_item.start, frame)
             }
         }
     }
