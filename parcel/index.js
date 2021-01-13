@@ -13,7 +13,7 @@ import {
 import AXEMAN from './examples/axeman.json'
 import KNIGHT from './examples/knight.json'
 
-const vertical = 0
+const vertical = 35
 const horizontal = 45
 const distance = 200
 
@@ -38,7 +38,11 @@ let sprite
 const { url, loops, framesHorizontal, framesVertical } = KNIGHT
 
 function init() {
-    const animation = SpriteAnimated3D()
+    const animation = SpriteAnimated3D({
+        onFinishLoop: (params) => {
+            // console.log('entra?', params)
+        },
+    })
     const texture = new THREE.TextureLoader().load(url)
     texture.minFilter = THREE.NearestFilter
     texture.minFilter = THREE.NearestMipmapLinearFilter
@@ -62,7 +66,6 @@ function init() {
         orientations.forEach((ori) => {
             ori.orientation = degToRad(ori.orientation)
         })
-        console.log(loop_name, orientations)
         animation.createLoop(loop_name, orientations)
     })
 
@@ -130,12 +133,6 @@ controls.addEventListener('change', (e) => {
 
 function updateCamera() {
     const rotation = cameraRotation + soldierRotation
-    console.log({
-        cameraRotation: Math.round(radToDeg(cameraRotation)),
-        soldierRotation: Math.round(radToDeg(soldierRotation)),
-        rotation: Math.round(radToDeg(rotation)),
-        converted: Math.round(radToDeg(reduceExcessRotation(rotation))),
-    })
     setRotation(rotation)
 }
 

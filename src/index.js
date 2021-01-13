@@ -1,7 +1,7 @@
 import SpriteAnimated from '@ocio/three-spriteanimated'
 
-export default function SpriteAnimated3D(onecircle = Math.PI * 2) {
-    const animation = SpriteAnimated()
+export default function SpriteAnimated3D({ onEnterFrame, onFinishLoop }) {
+    const animation = SpriteAnimated({ onEnterFrame: onEnterFrameWrapper })
     const loops = {}
     let rotation = 0
     let current_loop
@@ -16,12 +16,31 @@ export default function SpriteAnimated3D(onecircle = Math.PI * 2) {
         })
     }
 
+    function onEnterFrameWrapper(frame) {
+        // console.log(current_loop, frame)
+        if (typeof onEnterFrame === 'function') {
+            const loop_item = loops[current_loop].find(
+                ({ start, end }) => frame <= end && frame >= start
+            )
+            if (loop_item !== undefined) {
+                onEnterFrame(frame - loop_item.start)
+            }
+        }
+    }
+
     function onLeaveFrame() {
-        const current_farme = animation.getFrame()
+        const current_frame = animation.getFrame()
         const loop_item = loops[current_loop].find(
-            ({ end }) => end === current_farme
+            ({ end }) => end === current_frame
         )
         if (loop_item !== undefined) {
+            if (onFinishLoop && current_frame === loop_item.end) {
+                onFinishLoop({
+                    current_loop,
+                    current_frame,
+                    loop_item,
+                })
+            }
             return loop_item.start
         }
     }
@@ -43,31 +62,31 @@ export default function SpriteAnimated3D(onecircle = Math.PI * 2) {
     }
 
     function updateRotation() {
-        const current_farme = animation.getFrame()
+        const current_frame = animation.getFrame()
         const loops_name = loops[current_loop]
         const { current, selected } = getIndexLoop(
             loops_name,
-            current_farme,
+            current_frame,
             rotation
         )
         if (current !== selected) {
-            const relative_frame = current_farme - loops_name[current].start
+            const relative_frame = current_frame - loops_name[current].start
             animation.goto(loops_name[selected].start + relative_frame)
         }
     }
 
     function goto(name, frame = 0) {
-        const current_farme = animation.getFrame()
+        const current_frame = animation.getFrame()
         const { selected } = getIndexLoop(
             loops[current_loop],
-            current_farme,
+            current_frame,
             rotation
         )
         current_loop = name
         animation.goto(loops[name][selected].start + frame)
     }
 
-    function getIndexLoop(loops, current_farme, rotation) {
+    function getIndexLoop(loops, current_frame, rotation) {
         let min_orientation = Infinity
         let min_index
         let min_difference = Infinity
@@ -75,7 +94,7 @@ export default function SpriteAnimated3D(onecircle = Math.PI * 2) {
         let current = 0
         loops.forEach(({ start, end, orientation }, index) => {
             const difference = Math.abs(orientation - rotation)
-            if (current_farme >= start && current_farme <= end) {
+            if (current_frame >= start && current_frame <= end) {
                 current = index
             }
             if (difference < min_difference) {
@@ -89,6 +108,7 @@ export default function SpriteAnimated3D(onecircle = Math.PI * 2) {
         })
 
         // Initial orientation
+        const onecircle = Math.PI * 2
         const orientation = onecircle + min_orientation
         const difference = Math.abs(orientation - rotation)
         if (difference < min_difference) {
@@ -98,6 +118,10 @@ export default function SpriteAnimated3D(onecircle = Math.PI * 2) {
         return { current, selected }
     }
 
+    function getCurrentLoop() {
+        return current_loop
+    }
+
     const animation3d = {
         loops,
         animation,
@@ -105,6 +129,7 @@ export default function SpriteAnimated3D(onecircle = Math.PI * 2) {
         setRotation,
         update,
         goto,
+        getCurrentLoop,
     }
 
     return animation3d
