@@ -83,7 +83,13 @@ export default function SpriteAnimated3D({ onEnterFrame, onFinishLoop }) {
             rotation
         )
         current_loop = name
+        animation.playing = true
         animation.goto(loops[name][selected].start + frame)
+    }
+
+    function gotoAndStop(name) {
+        animation3d.goto(name, 0)
+        animation.pause()
     }
 
     function getIndexLoop(loops, current_frame, rotation) {
@@ -129,6 +135,7 @@ export default function SpriteAnimated3D({ onEnterFrame, onFinishLoop }) {
         setRotation,
         update,
         goto,
+        gotoAndStop,
         getCurrentLoop,
     }
 
